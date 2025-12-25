@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../themes/app_theme.dart';
+import '../../utils/splash_image_utils.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -124,7 +125,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo - Head with Mood Hearts
+                  // Splash Image with Logo
                   ScaleTransition(
                     scale: Tween(begin: 0.8, end: 1.0).animate(
                       CurvedAnimation(
@@ -132,7 +133,7 @@ class _SplashScreenState extends State<SplashScreen>
                         curve: Curves.easeOutBack,
                       ),
                     ),
-                    child: _buildMoodHeadIcon(),
+                    child: SplashImage.buildSplashImage(),
                   ),
 
                   const SizedBox(height: 40),
