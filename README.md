@@ -1,4 +1,4 @@
-# 🧠 Manoसाथी (ManoSathi)
+# 🧠 Manoसाथी 
 ### An AI-Powered Mental Health Detection & Support Application
 
 Manoसाथी is a smart mental health support application designed to identify early signs of mental stress, anxiety, depression, and loneliness using AI-driven conversational analysis. The app acts as a **digital companion**, talking with users like a real person, understanding their emotions, and providing personalized mental wellness support anytime, anywhere.
