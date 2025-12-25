@@ -27,9 +27,12 @@ class SplashImage {
     );
   }
 
+
   static Future<bool> _imageExists() async {
     try {
-      await AssetImage('assets/images/mind and heart 2.png').resolve(ImageConfiguration.empty);
+      await AssetImage(
+        'assets/images/mind and heart 2.png',
+      ).resolve(ImageConfiguration.empty);
       return true;
     } catch (e) {
       return false;
@@ -62,10 +65,7 @@ class SplashImage {
         alignment: Alignment.center,
         children: [
           // Brain icon
-          CustomPaint(
-            painter: BrainPainter(),
-            size: const Size(120, 100),
-          ),
+          CustomPaint(painter: BrainPainter(), size: const Size(120, 100)),
         ],
       ),
     );
@@ -114,9 +114,24 @@ class BrainPainter extends CustomPainter {
     canvas.drawPath(
       Path()
         ..moveTo(center.dx - 30, center.dy)
-        ..quadraticBezierTo(center.dx - 20, center.dy + 10, center.dx - 10, center.dy)
-        ..quadraticBezierTo(center.dx, center.dy + 10, center.dx + 10, center.dy)
-        ..quadraticBezierTo(center.dx + 20, center.dy + 10, center.dx + 30, center.dy),
+        ..quadraticBezierTo(
+          center.dx - 20,
+          center.dy + 10,
+          center.dx - 10,
+          center.dy,
+        )
+        ..quadraticBezierTo(
+          center.dx,
+          center.dy + 10,
+          center.dx + 10,
+          center.dy,
+        )
+        ..quadraticBezierTo(
+          center.dx + 20,
+          center.dy + 10,
+          center.dx + 30,
+          center.dy,
+        ),
       paint,
     );
 
