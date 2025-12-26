@@ -36,27 +36,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Header with gradient background
+  // Header with simple, eye-friendly design
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.primaryLight],
-        ),
+        color: AppColors.primary.withOpacity(0.08),
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(32),
-          bottomRight: Radius.circular(32),
+          bottomLeft: Radius.circular(16),
+          bottomRight: Radius.circular(16),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,40 +56,25 @@ class _HomeScreenState extends State<HomeScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        'नमस्ते',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.accent.withOpacity(0.9),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text('👋', style: TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
                   RichText(
                     text: const TextSpan(
                       children: [
                         TextSpan(
                           text: 'Mano',
                           style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.white,
-                            letterSpacing: 0.5,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.darkGray,
+                            letterSpacing: 0.3,
                           ),
                         ),
                         TextSpan(
                           text: 'साथी',
                           style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.accent,
-                            letterSpacing: 0.5,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.primary,
+                            letterSpacing: 0.3,
                           ),
                         ),
                       ],
@@ -111,33 +85,29 @@ class _HomeScreenState extends State<HomeScreen> {
               GestureDetector(
                 onTap: () => Navigator.pushNamed(context, '/profile'),
                 child: Container(
-                  width: 54,
-                  height: 54,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.white.withOpacity(0.2),
+                    color: AppColors.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.accent.withOpacity(0.5),
-                      width: 2.5,
-                    ),
                   ),
                   child: Icon(
                     Icons.person_rounded,
-                    color: AppColors.white,
-                    size: 28,
+                    color: AppColors.primary,
+                    size: 24,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Text(
             'How are you feeling today?',
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: AppColors.white.withOpacity(0.85),
-              letterSpacing: 0.3,
+              color: AppColors.mediumGray,
+              letterSpacing: 0.2,
             ),
           ),
         ],
