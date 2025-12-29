@@ -11,6 +11,33 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  late PageController _doctorCarouselController;
+  int _currentDoctorIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _doctorCarouselController = PageController(initialPage: 0);
+    _startAutoSwipe();
+  }
+
+  @override
+  void dispose() {
+    _doctorCarouselController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoSwipe() {
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted && _doctorCarouselController.hasClients) {
+        _doctorCarouselController.nextPage(
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.easeInOut,
+        );
+        _startAutoSwipe();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildHeader(),
               _buildWelcomeCard(),
+              const SizedBox(height: 24),
+              _buildDoctorCarousel(),
               const SizedBox(height: 24),
               _buildQuickActionsSection(),
               const SizedBox(height: 28),
@@ -41,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.08),
+        color: AppColors.white,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(16),
           bottomRight: Radius.circular(16),
@@ -115,6 +144,222 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Doctor Carousel Section - Swipeable Cards
+  Widget _buildDoctorCarousel() {
+    final doctors = [
+      {
+        'name': 'Dr. Priya Sharma',
+        'specialty': 'Psychiatrist',
+        'address': '123 Health Plaza, Mumbai',
+        'phone': '+91 98765 43210',
+        'icon': Icons.medical_services_rounded,
+        'color': AppColors.primary,
+      },
+      {
+        'name': 'Dr. Rajesh Kumar',
+        'specialty': 'Therapist',
+        'address': '456 Wellness Center, Delhi',
+        'phone': '+91 99876 54321',
+        'icon': Icons.psychology_rounded,
+        'color': AppColors.accent,
+      },
+      {
+        'name': 'Dr. Anjali Patel',
+        'specialty': 'Counselor',
+        'address': '789 Care Hospital, Bangalore',
+        'phone': '+91 97654 32109',
+        'icon': Icons.people_rounded,
+        'color': AppColors.primaryLight,
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            'Find Expert Help',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: AppColors.darkGray,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 190,
+          child: PageView.builder(
+            controller: _doctorCarouselController,
+            onPageChanged: (index) {
+              setState(() => _currentDoctorIndex = index % doctors.length);
+            },
+            itemBuilder: (context, index) {
+              final doctor = doctors[index % doctors.length];
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _buildDoctorCard(doctor),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Indicator Dots
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              doctors.length,
+              (index) => Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _currentDoctorIndex == index
+                      ? AppColors.primary
+                      : AppColors.mediumGray.withOpacity(0.3),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDoctorCard(Map<String, dynamic> doctor) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: (doctor['color'] as Color).withOpacity(0.12),
+          width: 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.mediumGray.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Icon and Name Section
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: (doctor['color'] as Color).withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      doctor['icon'] as IconData,
+                      color: doctor['color'] as Color,
+                      size: 26,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          doctor['name'] as String,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.darkGray,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          doctor['specialty'] as String,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: doctor['color'] as Color,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // Divider
+              Container(
+                height: 1,
+                color: (doctor['color'] as Color).withOpacity(0.1),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Address and Contact
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.location_on_rounded,
+                    color: (doctor['color'] as Color).withOpacity(0.7),
+                    size: 14,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      doctor['address'] as String,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.mediumGray,
+                        fontWeight: FontWeight.w500,
+                        height: 1.3,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(
+                    Icons.phone_rounded,
+                    color: doctor['color'] as Color,
+                    size: 14,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    doctor['phone'] as String,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.darkGray,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   // Welcome Card with mood status
   Widget _buildWelcomeCard() {
     return Container(
@@ -125,9 +370,9 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: AppColors.mediumGray.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -137,14 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.accent.withOpacity(0.2),
-                  AppColors.accentLight.withOpacity(0.1),
-                ],
-              ),
+              color: AppColors.lightGray,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Center(child: Text('😊', style: TextStyle(fontSize: 32))),
@@ -159,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
+                    color: AppColors.darkGray,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -191,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: AppColors.primary,
+              color: AppColors.darkGray,
             ),
           ),
         ),
@@ -205,8 +443,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.phone_in_talk_rounded,
                 title: 'Talk',
                 subtitle: 'Voice Support',
-                gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.primaryLight],
+                gradient: const LinearGradient(
+                  colors: [AppColors.lightGray, AppColors.lightGray],
                 ),
                 onTap: () => Navigator.pushNamed(context, '/talk'),
               ),
@@ -215,8 +453,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.chat_bubble_rounded,
                 title: 'Chat',
                 subtitle: 'AI Companion',
-                gradient: LinearGradient(
-                  colors: [AppColors.accent, AppColors.accentLight],
+                gradient: const LinearGradient(
+                  colors: [AppColors.lightGray, AppColors.lightGray],
                 ),
                 onTap: () => Navigator.pushNamed(context, '/chatbot'),
               ),
@@ -225,8 +463,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.support_agent_rounded,
                 title: 'Support',
                 subtitle: 'Resources',
-                gradient: LinearGradient(
-                  colors: [AppColors.primaryLight, AppColors.primary],
+                gradient: const LinearGradient(
+                  colors: [AppColors.lightGray, AppColors.lightGray],
                 ),
                 onTap: () => Navigator.pushNamed(context, '/support'),
               ),
@@ -252,11 +490,12 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           gradient: gradient,
           borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.mediumGray.withOpacity(0.12)),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.2),
-              blurRadius: 15,
-              offset: const Offset(0, 6),
+              color: AppColors.mediumGray.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -270,10 +509,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: AppColors.white.withOpacity(0.25),
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(icon, color: AppColors.white, size: 28),
+                child: Icon(icon, color: AppColors.darkGray, size: 28),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.white,
+                      color: AppColors.darkGray,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -292,7 +531,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.white.withOpacity(0.85),
+                      color: AppColors.mediumGray,
                     ),
                   ),
                 ],
@@ -319,7 +558,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
+                  color: AppColors.darkGray,
                 ),
               ),
               TextButton(
@@ -412,12 +651,12 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.15), width: 1.5),
+          border: Border.all(color: color.withOpacity(0.1), width: 1.0),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              color: AppColors.mediumGray.withOpacity(0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -428,11 +667,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 54,
               height: 54,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [color.withOpacity(0.2), color.withOpacity(0.1)],
-                ),
+                color: color.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(icon, color: color, size: 26),
@@ -446,7 +681,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
+                  color: AppColors.darkGray,
                 ),
               ),
             ),
@@ -471,10 +706,10 @@ class _HomeScreenState extends State<HomeScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
+            colors: [color.withOpacity(0.06), color.withOpacity(0.03)],
           ),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.2), width: 1.5),
+          border: Border.all(color: color.withOpacity(0.15), width: 1.5),
         ),
         child: Row(
           children: [
@@ -497,7 +732,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
+                      color: AppColors.darkGray,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -530,9 +765,9 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+            color: AppColors.mediumGray.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
